@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Leon开服网 | 站点列表</title>
+    <base href="/">
+    <link href="application/static/mdui/css/mdui.min.css" rel="stylesheet">
+    <script src="application/static/mdui/js/mdui.min.js"></script>
+    <link href="application/static/message/message.min.css" rel="stylesheet">
+    <script src="application/static/message/message.min.js"></script>
+    <script src="application/static/include/include.js"></script>
+    <link href="application/static/bs/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/application/static/bs/js/bootstrap.bundle.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="renderer" content="webkit">
+    <style>
+        /* 全局过渡设置，统一过渡效果 */
+        * {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            animation: fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        span {
+            border-radius: 4px;
+        }
+
+       .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            animation: slideInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+       .table tbody tr {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+       .table tbody tr:hover {
+            background-color: #ecf0f1;
+            transform: translateX(5px);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+       .btn {
+            border-radius: 4px;
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+       .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+       .form-floating input {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+       .form-floating input:focus {
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            transform: scale(1.01);
+        }
+
+       .modal-content {
+            animation: zoomIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        hr.my-4 {
+            border-top: 1px solid #ddd;
+            animation: fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+       .modal.fade.show {
+            transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+       .modal.fade {
+            opacity: 0;
+            transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <include src="../include/"></include>
+    <script>
+        let start = localStorage.getItem("start");
+        let end = localStorage.getItem("end");
+        start = start? start.split('|')[0] : '';
+        end = end? end.split('|')[0] : '';
+        $ = mdui.$;
+    </script>
+    <br>
+    <div class="container">
+        <p id="start-text" class="text-muted">加载中</p>
+        <p id="end-text" class="text-muted">加载中</p>
+        <button onclick="window.location.href = '/?s={{ s }}&start=' + start + '&end=' + end;Qmsg.loading('正在跳转到主页面')" class="btn btn-primary">
+            确定
+        </button>
+        <br>
+        <hr class="my-4">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="searchInput" placeholder="搜索站点">
+            <label for="searchInput">搜索站点</label>
+        </div>
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark text-white">
+                <tr>
+                    <th>颜色</th>
+                    <th>站名</th>
+                    <th>设置</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="loading-row">
+                    <td colspan="3" class="text-center">加载中...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="alertModalLabel">提示</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="alertModalBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("start-text").innerHTML = "起始站：" + localStorage.getItem("start");
+        document.getElementById("end-text").innerHTML = "终点站：" + localStorage.getItem("end");
+
+        const apiUrl = '{{ stationlist_name }}';
+
+        fetch(apiUrl)
+           .then(response => response.json())
+           .then(data => {
+                const tableBody = document.querySelector('table tbody');
+                const allStations = data[0].stations;
+                const fragment = document.createDocumentFragment();
+
+                for (const stationId in allStations) {
+                    const station = allStations[stationId];
+                    const tableRow = document.createElement('tr');
+
+                    const colorElement = document.createElement('td');
+                    const colorSpan = document.createElement('span');
+                    colorSpan.style.backgroundColor = '#' + station.color.toString(16).padStart(6, '0');
+                    colorSpan.style.width = '20px';
+                    colorSpan.style.height = '20px';
+                    colorSpan.style.display = 'inline-block';
+                    colorElement.appendChild(colorSpan);
+                    tableRow.appendChild(colorElement);
+
+                    const stationNameElement = document.createElement('td');
+                    stationNameElement.textContent = station.name;
+                    tableRow.appendChild(stationNameElement);
+
+                    const buttonDiv = document.createElement('td');
+                    const buttonGroup = document.createElement('div');
+                    buttonGroup.className = "btn-group";
+
+                    const copyButton1 = document.createElement('button');
+                    copyButton1.textContent = '设为起始站';
+                    copyButton1.className = "btn btn-primary";
+                    copyButton1.addEventListener('click', () => {
+                        try {
+                            localStorage.setItem("start", station.name);
+                            showAlert('设置成功');
+                            Qmsg.loading('正在重载页面......');
+                            location.reload();
+                        } catch (err) {
+                            showAlert('设置失败：' + err);
+                        }
+                    });
+
+                    const copyButton2 = document.createElement('button');
+                    copyButton2.textContent = '设为终点站';
+                    copyButton2.className = "btn btn-primary";
+                    copyButton2.addEventListener('click', () => {
+                        try {
+                            localStorage.setItem("end", station.name);
+                            showAlert('设置成功');
+                            Qmsg.loading('正在重载页面......');
+                            location.reload();
+                        } catch (err) {
+                            showAlert('设置失败：' + err);
+                        }
+                    });
+
+                    buttonGroup.appendChild(copyButton1);
+                    buttonGroup.appendChild(copyButton2);
+                    buttonDiv.appendChild(buttonGroup);
+                    tableRow.appendChild(buttonDiv);
+
+                    fragment.appendChild(tableRow);
+                }
+
+                const loadingRow = document.getElementById('loading-row');
+                if (loadingRow) {
+                    loadingRow.remove();
+                }
+
+                tableBody.appendChild(fragment);
+
+                const searchInput = document.getElementById('searchInput');
+                searchInput.addEventListener('input', function () {
+                    const searchTerm = this.value.toLowerCase();
+                    const rows = tableBody.getElementsByTagName('tr');
+                    for (let i = 0; i < rows.length; i++) {
+                        const stationName = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
+                        rows[i].style.display = stationName.includes(searchTerm)? '' : 'none';
+                    }
+                });
+            })
+           .catch(error => {
+                console.error('获取数据失败:', error);
+            });
+
+        function showAlert(message) {
+            const alertModalBody = document.getElementById('alertModalBody');
+            alertModalBody.textContent = message;
+            const myModal = new bootstrap.Modal(document.getElementById('alertModal'));
+            myModal.show();
+        }
+    </script>
+</body>
+
+</html>  

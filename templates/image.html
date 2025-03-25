@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Leon开服网 | 站点列表</title>
+    <base href="/">
+    <link href="application/static/mdui/css/mdui.min.css" rel="stylesheet">
+    <script src="application/static/mdui/js/mdui.min.js"></script>
+    <link href="application/static/message/message.min.css" rel="stylesheet">
+    <script src="application/static/message/message.min.js"></script>
+    <script src="application/static/include/include.js"></script>
+    <!-- Bootstrap 样式 -->
+    <link href="application/static/bs/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/application/static/bs/js/bootstrap.bundle.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="renderer" content="webkit">
+    <!-- AOS 库 -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        /* 淡入动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 滑动动画 */
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* 应用淡入动画到 body */
+        body {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* 应用滑动动画到标题和段落 */
+        h1,
+        p {
+            animation: slideIn 1s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <include src="../include/"></include>
+    <div class="container mt-4">
+        <h1 class="text-primary mb-4" data-aos="fade-up">导航结果</h1>
+        <p class="mb-4" data-aos="fade-up">这是您的导航结果：</p>
+        <img src="application/static/temp.jpg" class="rounded img-fluid mb-3" data-aos="zoom-in">
+        <p data-aos="fade-up">如果您想继续导航，请点击<a href="/" class="text-primary">这里</a>。</p>
+    </div>
+    <!-- AOS 脚本 -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+</body>
+
+</html>
+    

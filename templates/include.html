@@ -1,0 +1,67 @@
+<body>
+    <script src="/application/static/bs/js/bootstrap.bundle.js"></script>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="animation: slideInDown 0.5s ease-out;">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Leon开服网导航系统 <span class="badge text-bg-secondary">NewUI</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            其他网站
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="animation: slideInUp 0.3s ease-out;">
+                            <li><a class="dropdown-item" href="http://leonmmcoset.jjmm.ink:3001/status/all" target="_blank">状态网站</a></li>
+                            <li><a class="dropdown-item" href="http://leonmmcoset.jjmm.ink:1000/web/bbs/public/" target="_blank">LeonMMcoset论坛</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <style>
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .navbar-nav .nav-link {
+            transition: transform 0.2s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            transform: translateX(5px);
+        }
+
+        /* 移除错误的下拉菜单max-height限制 */
+        .dropdown-menu {
+            /* 移除原来的max-height: 0; */
+            transition: all 0.3s ease; 
+            /* 恢复Bootstrap默认显示 */
+            display: none; 
+        }
+        .dropdown.show .dropdown-menu {
+            display: block; /* 确保展开时显示 */
+        }
+    </style>
+</body>

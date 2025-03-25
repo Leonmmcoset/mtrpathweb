@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="renderer" content="webkit">
+    <title>Leon开服网 | 导航系统</title>
+    <base href="/">
+    <!-- 合并 CSS 文件引入 -->
+    <link rel="stylesheet" href="/application/static/mdui/css/mdui.min.css">
+    <link rel="stylesheet" href="/application/static/message/message.min.css">
+    <link rel="stylesheet" href="/application/static/bs/css/bootstrap.min.css">
+    <style>
+        /* 新增全局过渡设置 */
+        * {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        }
+
+        /* 表单容器样式 */
+        #navForm {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+                filter: blur(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        /* 其他原有样式 */
+        #navForm label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        #navForm #ok {
+            background-color: #007BFF;
+            border: none;
+        }
+
+        #navForm #ok:hover {
+            background-color: #0056b3;
+        }
+
+        .text-danger {
+            display: flex;
+            align-items: center;
+        }
+
+        .text-danger i {
+            margin-right: 5px;
+        }
+
+        .list-group a {
+            border: none;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .list-group a:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.02);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        button.btn {
+            transition: transform 0.2s ease;
+        }
+
+        button.btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 调整下拉菜单样式 */
+       .bootstrap-select.form-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* 优化模态框过渡效果 */
+       .modal.fade .modal-dialog {
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+       .modal.fade.show .modal-dialog {
+            transform: translateY(0);
+        }
+    </style>
+    <!-- 合并 JavaScript 文件引入 -->
+    <script src="/application/static/mdui/js/mdui.min.js"></script>
+    <script src="/application/static/message/message.min.js"></script>
+    <script src="/application/static/include/include.js"></script>
+    <script src="/application/static/bs/js/bootstrap.bundle.js"></script>
+</head>
+
+<body class="bg-light">
+    <!-- 引入公共部分 -->
+    <include src="include/"></include>
+    <script>
+        $ = mdui.$;
+        Qmsg.info('按下"确认"按钮后请等四五秒');
+    </script>
+
+    <!-- Bootstrap 模态框（原 MDUI 对话框） -->
+    <div class="modal fade" id="copyright" tabindex="-1" aria-labelledby="copyrightLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="copyrightLabel"><i class="mdui-icon material-icons">people</i>网站作者</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    寻路程序作者：CokeStudio<br>网站作者：LeonMMcoset
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主体内容 -->
+    <div class="container">
+        <h1 class="mt-4"><i class="mdui-icon material-icons">border_color</i>请输入信息</h1>
+        <form method="post" id="navForm">
+            {% csrf_token %}
+            <div class="form-group mt-3">
+                <label for="server">服务器：</label>
+                <select class="form-select bootstrap-select" id="server" name="server">
+                    <option value="1" {{ isa }}>Leon轨道交通</option>
+                    <option value="2" {{ isb }}>云山城市建设服务器</option>
+                    <option value="3" {{ isc }}>永盛工艺</option>
+                </select>
+            </div>
+            <div class="form-floating mt-3">
+                <input class="form-control" type="text" id="input" name="input" value="是" required maxlength="1"
+                    placeholder="是否用最新数据（是/否）">
+                <label for="input">是否用最新数据（是/否）</label>
+                <div class="invalid-feedback">请选择一个选项</div>
+            </div>
+            <div class="form-floating mt-3">
+                <input class="form-control" type="text" id="detail" name="detail" value="否" required maxlength="1"
+                    placeholder="是否显示详细数据（是/否）">
+                <label for="detail">是否显示详细数据（是/否）</label>
+                <div class="invalid-feedback">请选择一个选项</div>
+            </div>
+            <div class="form-floating mt-3">
+                <input class="form-control" type="text" id="input1" name="input1" required maxlength="50" {{ start }}
+                    placeholder="请输入一个站点名称">
+                <label for="input1">起点</label>
+                <div class="invalid-feedback">请输入一个站点名称</div>
+            </div>
+            <div class="form-floating mt-3">
+                <input class="form-control" type="text" id="input2" name="input2" required maxlength="50" {{ end }}
+                    placeholder="请输入一个站点名称">
+                <label for="input2">终点</label>
+                <div class="invalid-feedback">请输入一个站点名称</div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-4" id="ok">
+                <i class="mdui-icon material-icons">search</i> 确认
+            </button>
+        </form>
+
+        <hr class="my-4">
+        <strong class="text-danger"><i class="mdui-icon material-icons">warning</i>请注意</strong>
+        <p>大型服务器请不要开启“是否用最新数据"，不仅查询慢而且可能会把查询服务器搞崩溃！</p>
+
+        <hr class="my-4">
+        <strong class="mb-2"><i class="mdui-icon material-icons">format_list_bulleted</i>服务器站点列表</strong>
+        <div class="list-group">
+            <a href="/stationlist/?s=1" class="list-group-item list-group-item-action">Leon轨道交通</a>
+            <a href="/stationlist/?s=2" class="list-group-item list-group-item-action">云山城市建设服务器</a>
+            <a href="/stationlist/?s=3" class="list-group-item list-group-item-action">永盛工艺</a>
+        </div>
+
+        <hr class="my-4">
+        <strong class="mb-2"><i class="mdui-icon material-icons">map</i>线路图链接</strong>
+        <div class="list-group">
+            <a href="http://leonmmcoset.jjmm.ink:25565/index.html" target="_blank"
+                class="list-group-item list-group-item-action">Leon轨道交通</a>
+            <a href="http://leonmmcoset.jjmm.ink:8810" target="_blank"
+                class="list-group-item list-group-item-action">云山城市建设服务器</a>
+            <a href="http://leonmmcoset.jjmm.ink:8999" target="_blank"
+                class="list-group-item list-group-item-action">永盛工艺</a>
+        </div>
+
+        <hr class="my-4">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#copyright">
+            <i class="mdui-icon material-icons">people</i> 网站作者
+        </button>
+    </div>
+
+    <!-- 表单验证脚本 -->
+    <script>
+        $(document).ready(function () {
+            // 原有表单验证
+            $("#navForm").on("submit", function (e) {
+                if (!this.checkValidity()) {
+                    e.preventDefault();
+                    Qmsg.error('输入值必须为“是”或者“否”', {
+                        timeout: 2000,
+                        animate:'slide-up'
+                    });
+                    return;
+                }
+                const inputValue = $('#input').val();
+                const detailValue = $('#detail').val();
+                if (inputValue!== '是' && inputValue!== '否') {
+                    e.preventDefault();
+                    Qmsg.error('输入值必须为“是”或者“否”', {
+                        timeout: 2000,
+                        animate:'slide-up'
+                    });
+                    return;
+                }
+                if (detailValue!== '是' && detailValue!== '否') {
+                    e.preventDefault();
+                    Qmsg.error('输入值必须为“是”或者“否”', {
+                        timeout: 2000,
+                        animate:'slide-up'
+                    });
+                    return;
+                }
+                const loading = Qmsg.loading('正在执行导航程序......', {
+                    html: '<i class="mdui-spinner mdui-spinner-indeterminate"></i> 处理中',
+                    timeout: 0
+                });
+                setTimeout(() => {
+                    loading.hide();
+                    Qmsg.success('导航程序已启动', {
+                        animate: 'zoom-in'
+                    });
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+
+</html>    
