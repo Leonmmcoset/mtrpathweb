@@ -27,10 +27,6 @@ def get_server_url(server_value):
     """根据传入的服务器选项返回对应的 URL"""
     return SERVER_URL_MAP.get(server_value)
 
-def get_bool_value(value):
-    """将传入的字符串转换为布尔值"""
-    return value == '是' if value in ('是', '否') else None
-
 def index(request):
     # 接收查询符
     webis = request.GET.get('s')
@@ -50,13 +46,6 @@ def index(request):
         server_value = request.POST.get('server')
         detail_value = request.POST.get('detail')
 
-        # 转换为布尔值
-        update_value = get_bool_value(update_value)
-        detail_value = get_bool_value(detail_value)
-
-        if update_value is None or detail_value is None:
-            return redirect('error/?r=2')
-
         # 获取服务器 URL
         server_url = get_server_url(server_value)
         if server_url is None:
@@ -70,7 +59,7 @@ def index(request):
         print(f'是否显示详细信息：{detail_value}')
 
         try:
-            run(input1_value, input2_value, update_value, server_url, detail_value)
+            run(input1_value, input2_value, update_value == '是', server_url, detail_value == '是')
         except Exception as e:
             print(f"运行时出错: {e}")
             return redirect('error/?r=1')
@@ -110,3 +99,6 @@ def error(request):
 
 def include(request):
     return render(request, 'include.html')    
+
+def release(request):
+    return render(request, 'release.html')

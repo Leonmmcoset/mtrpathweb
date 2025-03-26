@@ -104,6 +104,69 @@
        .modal.fade.show .modal-dialog {
             transform: translateY(0);
         }
+
+        /* 滑动选择器样式优化 */
+       .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-left: 10px;
+        }
+
+       .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+       .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: 0.4s;
+            transition: 0.4s;
+            border-radius: 24px;
+            box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
+        }
+
+       .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            -webkit-transition: 0.4s;
+            transition: 0.4s;
+            border-radius: 50%;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        }
+
+        input:checked +.toggle-slider {
+            background-color: #2196F3;
+        }
+
+        input:focus +.toggle-slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked +.toggle-slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* 让标签和滑动选择器水平居中对齐 */
+       .form-group label {
+            display: inline-flex;
+            align-items: center;
+        }
     </style>
     <!-- 合并 JavaScript 文件引入 -->
     <script src="/application/static/mdui/js/mdui.min.js"></script>
@@ -152,17 +215,19 @@
                     <option value="3" {{ isc }}>永盛工艺</option>
                 </select>
             </div>
-            <div class="form-floating mt-3">
-                <input class="form-control" type="text" id="input" name="input" value="是" required maxlength="1"
-                    placeholder="是否用最新数据（是/否）">
-                <label for="input">是否用最新数据（是/否）</label>
-                <div class="invalid-feedback">请选择一个选项</div>
+            <div class="form-group mt-3">
+                <label for="input">是否用最新数据</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="input" name="input" checked>
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
-            <div class="form-floating mt-3">
-                <input class="form-control" type="text" id="detail" name="detail" value="否" required maxlength="1"
-                    placeholder="是否显示详细数据（是/否）">
-                <label for="detail">是否显示详细数据（是/否）</label>
-                <div class="invalid-feedback">请选择一个选项</div>
+            <div class="form-group mt-3">
+                <label for="detail">是否显示详细数据</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="detail" name="detail" checked>
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
             <div class="form-floating mt-3">
                 <input class="form-control" type="text" id="input1" name="input1" required maxlength="50" {{ start }}
@@ -213,34 +278,31 @@
     <!-- 表单验证脚本 -->
     <script>
         $(document).ready(function () {
-            // 原有表单验证
             $("#navForm").on("submit", function (e) {
+                // 将滑动选择器的值设置为“是”或“否”
+                $('#input').val($('#input').is(':checked') ? '是' : '否');
+                $('#detail').val($('#detail').is(':checked') ? '是' : '否');
+
+                // 原有表单验证
                 if (!this.checkValidity()) {
                     e.preventDefault();
-                    Qmsg.error('输入值必须为“是”或者“否”', {
+                    Qmsg.error('请输入有效的站点名称', {
                         timeout: 2000,
                         animate:'slide-up'
                     });
                     return;
                 }
-                const inputValue = $('#input').val();
-                const detailValue = $('#detail').val();
-                if (inputValue!== '是' && inputValue!== '否') {
+                const input1Value = $('#input1').val();
+                const input2Value = $('#input2').val();
+                if (!input1Value || !input2Value) {
                     e.preventDefault();
-                    Qmsg.error('输入值必须为“是”或者“否”', {
+                    Qmsg.error('请输入有效的站点名称', {
                         timeout: 2000,
                         animate:'slide-up'
                     });
                     return;
                 }
-                if (detailValue!== '是' && detailValue!== '否') {
-                    e.preventDefault();
-                    Qmsg.error('输入值必须为“是”或者“否”', {
-                        timeout: 2000,
-                        animate:'slide-up'
-                    });
-                    return;
-                }
+
                 const loading = Qmsg.loading('正在执行导航程序......', {
                     html: '<i class="mdui-spinner mdui-spinner-indeterminate"></i> 处理中',
                     timeout: 0

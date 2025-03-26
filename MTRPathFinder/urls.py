@@ -36,6 +36,7 @@ urlpatterns = [
     path('image/', image),
     path('error/', error),
     path('include/', include),
+    path('release/', release),
 ]
 
 from django.conf.urls import include
