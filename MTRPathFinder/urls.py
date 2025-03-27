@@ -37,6 +37,7 @@ urlpatterns = [
     path('error/', error),
     path('include/', include),
     path('release/', release),
+    path('issue/', issue),
 ]
 
 from django.conf.urls import include

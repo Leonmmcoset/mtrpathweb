@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>GitHub Issues 列表</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="application/static/message/message.min.css" rel="stylesheet">
+    <script src="application/static/message/message.min.js"></script>
+    <!-- Bootstrap 样式 -->
+    <link href="application/static/bs/css/bootstrap.min.css" rel="stylesheet">
+    <!-- AOS 库样式 -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Markdown 解析库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
+    <!-- 自定义动画样式 -->
+    <style>
+        /* 页面整体进入动画 */
+        .page-enter {
+            opacity: 0;
+            transform: translateY(100px);
+            animation: customFadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes customFadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 卡片动画优化 */
+        .card {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.5s ease-out;
+        }
+
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body class="bg-light page-enter">
+    <include src="../include/"></include>
+    <div class="container mt-4" id="main-content">
+        <h1 class="mb-4">GitHub 存储库 Issues 列表</h1>
+        <div id="issues-list"></div>
+    </div>
+    <!-- Bootstrap 脚本 -->
+    <script src="application/static/bs/js/bootstrap.bundle.js"></script>
+    <!-- AOS 脚本 -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- 动画库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script>
+        // 客户端包含功能实现
+        document.addEventListener('DOMContentLoaded', function() {
+            const includes = document.querySelectorAll('include');
+            includes.forEach(include => {
+                const src = include.getAttribute('src');
+                if (src) {
+                    fetch(src)
+                        .then(response => response.text())
+                        .then(html => {
+                            include.outerHTML = html;
+                        })
+                        .catch(error => {
+                            console.error(`包含文件加载失败: ${src}`, error);
+                            include.style.display = 'none';
+                        });
+                }
+            });
+        });
+
+        const apiUrl = `https://api.github.com/repos/leonmmcoset/mtrpathweb/issues`;
+        const md = window.markdownit();
+
+        console.log('开始请求 API:', apiUrl);
+
+        fetch(apiUrl, {
+            headers: {
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        })
+          .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+          .then(issues => {
+                console.log('成功获取 Issues 信息:', issues);
+                const issuesList = document.getElementById('issues-list');
+                issues.forEach((issue, index) => {
+                    const issueCard = document.createElement('div');
+                    issueCard.classList.add('card', 'mb-3');
+
+                    try {
+                        const cardHeader = document.createElement('div');
+                        cardHeader.classList.add('card-header');
+                        cardHeader.innerHTML = `<h5 class="mb-0">${issue.title}</h5>`;
+
+                        const cardBody = document.createElement('div');
+                        cardBody.classList.add('card-body');
+
+                        const assignee = document.createElement('p');
+                        assignee.classList.add('card-text');
+                        assignee.innerHTML = `<strong>受理人:</strong> ${issue.assignee ? issue.assignee.login : '无'}`;
+
+                        const labels = document.createElement('p');
+                        labels.classList.add('card-text');
+                        labels.innerHTML = `<strong>标签:</strong> ${issue.labels.map(label => label.name).join(', ') || '无'}`;
+
+                        const createdTime = document.createElement('p');
+                        createdTime.classList.add('card-text');
+                        createdTime.innerHTML = `<strong>创建时间:</strong> ${new Date(issue.created_at).toLocaleString()}`;
+
+                        const isClosed = document.createElement('p');
+                        isClosed.classList.add('card-text');
+                        isClosed.innerHTML = `<strong>是否关闭:</strong> ${issue.state === 'closed' ? '是' : '否'}`;
+
+                        const content = document.createElement('div');
+                        content.classList.add('card-text');
+                        content.innerHTML = md.render(issue.body || '无描述');
+
+                        const issueLinkButton = document.createElement('a');
+                        issueLinkButton.classList.add('btn', 'btn-primary');
+                        issueLinkButton.href = issue.html_url;
+                        issueLinkButton.target = '_blank';
+                        issueLinkButton.textContent = '打开当前 Issue 链接';
+
+                        cardBody.appendChild(assignee);
+                        cardBody.appendChild(labels);
+                        cardBody.appendChild(createdTime);
+                        cardBody.appendChild(isClosed);
+                        cardBody.appendChild(content);
+                        cardBody.appendChild(issueLinkButton);
+
+                        issueCard.appendChild(cardHeader);
+                        issueCard.appendChild(cardBody);
+
+                        issuesList.appendChild(issueCard);
+
+                        // 卡片动画触发
+                        const observer = new IntersectionObserver((entries, observer) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    entry.target.classList.add('visible');
+                                    observer.unobserve(entry.target);
+                                }
+                            });
+                        });
+                        observer.observe(issueCard);
+
+                    } catch (error) {
+                        console.error('创建卡片时出错:', error);
+                        issueCard.style.display = 'none';
+                    }
+                });
+            })
+          .catch(error => {
+                console.error('获取 Issues 信息时出错:', error);
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'alert alert-danger';
+                errorMessage.textContent = `无法获取 Issues 信息，错误详情: ${error.message}，请稍后重试`;
+                document.getElementById('main-content').appendChild(errorMessage);
+            });
+    </script>
+</body>
+
+</html>
+    

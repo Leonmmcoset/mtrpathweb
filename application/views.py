@@ -102,3 +102,6 @@ def include(request):
 
 def release(request):
     return render(request, 'release.html')
+
+def issue(request):
+    return render(request, 'issue.html')
