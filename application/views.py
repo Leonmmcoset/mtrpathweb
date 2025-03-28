@@ -1,6 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .mtrpath import run
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .api import RequestDataSerializer
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 # 缓存服务器 URL
 SERVER_URL_MAP = {
@@ -26,6 +32,56 @@ def get_start_end_value(value):
 def get_server_url(server_value):
     """根据传入的服务器选项返回对应的 URL"""
     return SERVER_URL_MAP.get(server_value)
+
+class MyAPIView(APIView):
+    request_body = openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'ServerID': openapi.Schema(type=openapi.TYPE_STRING, description='服务器 ID'),
+            'Start': openapi.Schema(type=openapi.TYPE_STRING, description='起始值'),
+            'End': openapi.Schema(type=openapi.TYPE_STRING, description='结束值'),
+        },
+        required=['ServerIDapi', 'Startapi', 'Endapi']
+    )
+
+    @swagger_auto_schema(
+        operation_summary="处理POST请求，返回图片ID",
+        operation_description="接收ServerID（服务器ID）、Start（起始站）和End（终点站）参数，处理后返回图片ID。\n生成的图片会在<网址>/application/static/generate/generate-<返回ID>.jpg",
+        request_body=request_body,
+        responses={
+            200: openapi.Response('成功返回结果 ID', openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'id': openapi.Schema(type=openapi.TYPE_STRING, description='结果 ID')
+                }
+            )),
+            400: openapi.Response('请求参数错误', openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'error': openapi.Schema(type=openapi.TYPE_STRING, description='错误信息')
+                }
+            ))
+        }
+    )
+    def post(self, request):
+        serializer = RequestDataSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                serveridapi = request.data.get('ServerID')
+                startapi = request.data.get('Start')
+                endapi = request.data.get('End')
+                print(serveridapi)
+                print(startapi)
+                print(endapi)
+                result_id = run(startapi, endapi, True, get_server_url(serveridapi), False)
+                return Response({"id": result_id}, status=status.HTTP_200_OK)
+            except ValueError as ve:
+                return Response({"error": f"Value error: {str(ve)}"}, status=status.HTTP_400_BAD_REQUEST)
+            except ConnectionError as ce:
+                return Response({"error": f"Connection error: {str(ce)}"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            except Exception as e:
+                return Response({"error": f"Unexpected error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def index(request):
     # 接收查询符
