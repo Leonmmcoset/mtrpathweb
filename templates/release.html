@@ -115,6 +115,14 @@
                         tag.classList.add('card-text');
                         tag.innerHTML = `<strong>标签:</strong> ${release.tag_name}`;
 
+                        const create = document.createElement('p');
+                        create.classList.add('card-text');
+                        create.innerHTML = `<strong>创建时间:</strong> ${release.created_at}`;
+
+                        const publish = document.createElement('p');
+                        publish.classList.add('card-text');
+                        publish.innerHTML = `<strong>公开时间:</strong> ${release.published_at}`;
+
                         const content = document.createElement('div');
                         content.classList.add('card-text');
                         content.innerHTML = md.render(release.body);
@@ -123,11 +131,30 @@
                         releaseLinkButton.classList.add('btn', 'btn-primary');
                         releaseLinkButton.href = release.html_url;
                         releaseLinkButton.target = '_blank';
-                        releaseLinkButton.textContent = '打开当前版本 Release 链接';
+                        releaseLinkButton.textContent = '打开当前版本GitHub链接';
+
+                        const downloadLinkButton = document.createElement('a');
+                        downloadLinkButton.classList.add('btn', 'btn-primary');
+                        downloadLinkButton.href = release.zipball_url;
+                        downloadLinkButton.target = '_blank';
+                        downloadLinkButton.textContent = '下载该版本源代码';
+
+                        const hr = document.createElement('hr');
+                        const hr2 = document.createElement('hr');
+
+                        const br = document.createElement('br');
+                        const br2 = document.createElement('br');
 
                         cardBody.appendChild(tag);
+                        cardBody.appendChild(create);
+                        cardBody.appendChild(publish);
+                        cardBody.appendChild(hr);
                         cardBody.appendChild(content);
+                        cardBody.appendChild(hr2);
                         cardBody.appendChild(releaseLinkButton);
+                        cardBody.appendChild(br);
+                        cardBody.appendChild(br2);
+                        cardBody.appendChild(downloadLinkButton);
 
                         releaseCard.appendChild(cardHeader);
                         releaseCard.appendChild(cardBody);

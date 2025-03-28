@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-9oej!pkofi8_9t#v94^6d323=1_i1h4&2=^8zw6e@-c2owl+m2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'leonmmcoset.jjmm.ink',
@@ -44,7 +44,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'application.apps.ApplicationConfig',
     'debug_toolbar',
+    'drf_yasg',
+    'rest_framework',
 ]
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        '身份验证': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

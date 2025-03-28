@@ -59,13 +59,13 @@ def index(request):
         print(f'是否显示详细信息：{detail_value}')
 
         try:
-            run(input1_value, input2_value, update_value == '是', server_url, detail_value == '是')
+            imageid2 = run(input1_value, input2_value, update_value == '是', server_url, detail_value == '是')
         except Exception as e:
             print(f"运行时出错: {e}")
             return redirect('error/?r=1')
 
         # 重定向到成功页面
-        return redirect('formtest/')
+        return redirect(f'image/?id={imageid2}')
 
     return render(request, 'index.html', {'isa': isa, 'isb': isb, 'isc': isc, 'start': start, 'end': end})
 
@@ -85,7 +85,8 @@ def stationlist(request):
     return render(request, 'stationlist.html', {'stationlist_name': stationlist_name, 's': stationlist_origin})
 
 def image(request):
-    return render(request, 'image.html')
+    imageid = request.GET.get('id')
+    return render(request, 'image.html', {'imageid': imageid})
 
 def error(request):
     errorimage = request.GET.get('r')

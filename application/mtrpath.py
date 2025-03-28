@@ -18,6 +18,7 @@ import json
 import os
 import pickle
 import re
+import leonranp
 
 from fontTools.ttLib import TTFont
 from opencc import OpenCC
@@ -1171,9 +1172,10 @@ def generate_image(pattern, shortest_distance, riding_time, waiting_time,
             # 将解码后的数据写入文件
             file.write(base64_data)
         print(f"图片已保存到{file_path}")
-    save_base64_image(byte_data, 'application/static/temp.jpg')
+    randcodefile = leonranp.randcode(6)
+    save_base64_image(byte_data, f'application/static/generate/generate-{randcodefile}.jpg')
     base64_str = base64.b64encode(byte_data).decode('utf-8')
-    return image, base64_str
+    return randcodefile
 
 
 def main(station1: str, station2: str, LINK: str,
@@ -1285,8 +1287,10 @@ def run(start, end, update, server, booldetail):
     # 出发、到达车站
     station1 = start
     station2 = end
+    
+    randcodefile = ''
 
-    main(station1, station2, LINK, LOCAL_FILE_PATH, INTERVAL_PATH,
+    return main(station1, station2, LINK, LOCAL_FILE_PATH, INTERVAL_PATH,
          BASE_PATH, PNG_PATH, MAX_WILD_BLOCKS,
          TRANSFER_ADDITION, WILD_ADDITION, STATION_TABLE,
          ORIGINAL_IGNORED_LINES, UPDATE_DATA, GEN_ROUTE_INTERVAL,
