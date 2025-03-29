@@ -38,11 +38,11 @@ class MyAPIView(APIView):
     request_body = openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'ServerID': openapi.Schema(type=openapi.TYPE_STRING, description='服务器 ID'),
-            'Start': openapi.Schema(type=openapi.TYPE_STRING, description='起始值'),
-            'End': openapi.Schema(type=openapi.TYPE_STRING, description='结束值'),
+            'ServerID': openapi.Schema(type=openapi.TYPE_STRING, description='服务器ID'),
+            'Start': openapi.Schema(type=openapi.TYPE_STRING, description='起始站'),
+            'End': openapi.Schema(type=openapi.TYPE_STRING, description='终点站'),
         },
-        required=['ServerIDapi', 'Startapi', 'Endapi']
+        required=['ServerID', 'Start', 'End']
     )
 
     @swagger_auto_schema(
@@ -50,10 +50,10 @@ class MyAPIView(APIView):
         operation_description="接收ServerID（服务器ID）、Start（起始站）和End（终点站）参数，处理后返回图片ID。\n生成的图片会在<网址>/application/static/generate/generate-<返回ID>.jpg",
         request_body=request_body,
         responses={
-            200: openapi.Response('成功返回结果 ID', openapi.Schema(
+            200: openapi.Response('成功返回图片ID', openapi.Schema(
                 type=openapi.TYPE_OBJECT,
                 properties={
-                    'id': openapi.Schema(type=openapi.TYPE_STRING, description='结果 ID'),
+                    'id': openapi.Schema(type=openapi.TYPE_STRING, description='图片ID'),
                     'time': openapi.Schema(type=openapi.TYPE_STRING, description='输出结果的时间')
                 }
             )),
