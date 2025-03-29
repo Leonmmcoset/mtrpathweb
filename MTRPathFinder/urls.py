@@ -32,8 +32,8 @@ schema_view = get_schema_view(
         title='接口文档',   # API文档标题
         default_version='V1',   # 版本信息
         description='接口文档',    # 描述内容
-        # terms_of_service='https://qaq.com',    # 开发团队地址
-        # contact=openapi.Contact(email='https://qaq.@qq.com',url='https://qaq.com'),   # 联系人信息：邮件、网址
+        terms_of_service='https://github.com/leonmmcoset',    # 开发团队地址
+        contact=openapi.Contact(email='leonmmcoset@outlook.com',url='https://github.com/leonmmcoset'),   # 联系人信息：邮件、网址
         license=openapi.License(name='MIT License'),    # 证书
     ),
     public=True,    # 是否公开

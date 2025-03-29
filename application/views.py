@@ -7,6 +7,7 @@ from rest_framework import status
 from .api import RequestDataSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+import time
 
 # 缓存服务器 URL
 SERVER_URL_MAP = {
@@ -52,7 +53,8 @@ class MyAPIView(APIView):
             200: openapi.Response('成功返回结果 ID', openapi.Schema(
                 type=openapi.TYPE_OBJECT,
                 properties={
-                    'id': openapi.Schema(type=openapi.TYPE_STRING, description='结果 ID')
+                    'id': openapi.Schema(type=openapi.TYPE_STRING, description='结果 ID'),
+                    'time': openapi.Schema(type=openapi.TYPE_STRING, description='输出结果的时间')
                 }
             )),
             400: openapi.Response('请求参数错误', openapi.Schema(
@@ -70,11 +72,9 @@ class MyAPIView(APIView):
                 serveridapi = request.data.get('ServerID')
                 startapi = request.data.get('Start')
                 endapi = request.data.get('End')
-                print(serveridapi)
-                print(startapi)
-                print(endapi)
+                timeapi = time.ctime()
                 result_id = run(startapi, endapi, True, get_server_url(serveridapi), False)
-                return Response({"id": result_id}, status=status.HTTP_200_OK)
+                return Response({"id": result_id, "time": timeapi}, status=status.HTTP_200_OK)
             except ValueError as ve:
                 return Response({"error": f"Value error: {str(ve)}"}, status=status.HTTP_400_BAD_REQUEST)
             except ConnectionError as ce:
