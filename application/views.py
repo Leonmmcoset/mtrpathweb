@@ -8,37 +8,48 @@ from .api import RequestDataSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 import time
-
-# 缓存服务器 URL
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication  
+ 
+class CsrfExemptSessionAuthentication(SessionAuthentication): 
+ 
+    def enforce_csrf(self, request): 
+        return  # To not perform the csrf check previously happening
+        
+# 缓存服务器 URL（新增服务器4）
 SERVER_URL_MAP = {
     '1': 'http://leonmmcoset.jjmm.ink:25565',
     '2': 'http://leonmmcoset.jjmm.ink:8810',
-    '3': 'http://leonmmcoset.jjmm.ink:8999'
+    '3': 'http://leonmmcoset.jjmm.ink:8999',
+    '4': 'http://zhuimeng.9666.fun:32870'  # 新增服务器配置
 }
 
 def get_selected_option(webis):
-    """根据传入的参数返回对应的选中状态"""
+    """支持4个服务器的选中状态判断"""
     if webis == '1':
-        return 'selected', '', ''
+        return 'selected', '', '', ''       # 服务器1选中
     elif webis == '2':
-        return '', 'selected', ''
+        return '', 'selected', '', ''       # 服务器2选中
     elif webis == '3':
-        return '', '', 'selected'
-    return '', '', ''
+        return '', '', 'selected', ''       # 服务器3选中
+    elif webis == '4':                    # 新增服务器4的判断
+        return '', '', '', 'selected'       # 服务器4选中
+    else:
+        return '', '', '', ''               # 无选中状态
 
 def get_start_end_value(value):
-    """根据传入的值返回格式化后的字符串"""
+    """保持原有参数处理逻辑"""
     return f'value={value}' if value is not None else ''
 
 def get_server_url(server_value):
-    """根据传入的服务器选项返回对应的 URL"""
+    """保持原有URL获取逻辑，自动支持新服务器ID"""
     return SERVER_URL_MAP.get(server_value)
 
 class MyAPIView(APIView):
+    """API接口保持原有逻辑，自动支持新增的服务器ID=4"""
     request_body = openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'ServerID': openapi.Schema(type=openapi.TYPE_STRING, description='服务器ID'),
+            'ServerID': openapi.Schema(type=openapi.TYPE_STRING, description='服务器ID（支持1-4）'),
             'Start': openapi.Schema(type=openapi.TYPE_STRING, description='起始站'),
             'End': openapi.Schema(type=openapi.TYPE_STRING, description='终点站'),
         },
@@ -84,47 +95,46 @@ class MyAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def index(request):
-    # 接收查询符
-    webis = request.GET.get('s')
+    """处理前端页面的服务器选择和表单提交"""
+    webis = request.GET.get('s', '1')  # 默认选中服务器1（可根据需求调整）
     start = request.GET.get('start')
     end = request.GET.get('end')
 
-    # 获取选中状态和格式化后的起始、结束值
-    isa, isb, isc = get_selected_option(webis)
+    # 获取四个服务器的选中状态（新增isd对应服务器4）
+    isa, isb, isc, isd = get_selected_option(webis)
     start = get_start_end_value(start)
     end = get_start_end_value(end)
 
     if request.method == 'POST':
-        # 获取输入框的值并转化为 Python 变量
         input1_value = request.POST.get('input1')
         input2_value = request.POST.get('input2')
-        update_value = request.POST.get('input')
-        server_value = request.POST.get('server')
-        detail_value = request.POST.get('detail')
+        update_value = request.POST.get('input')  # 默认为不更新
+        server_value = request.POST.get('server', '1')  # 默认为服务器1
+        detail_value = request.POST.get('detail')  # 默认为不显示详细
 
-        # 获取服务器 URL
         server_url = get_server_url(server_value)
-        if server_url is None:
-            return redirect('error/?r=2')
-
-        # 打印输入信息
-        print(f"输入框 1 的值: {input1_value}")
-        print(f"输入框 2 的值: {input2_value}")
-        print(f'是否更新: {update_value}')
-        print(f'服务器: {server_url}')
-        print(f'是否显示详细信息：{detail_value}')
+        if not server_url:
+            return redirect('error/?r=2')  # 无效服务器ID
 
         try:
-            imageid2 = run(input1_value, input2_value, update_value == '是', server_url, detail_value == '是')
+            imageid2 = run(input1_value, input2_value, update_value == True, server_url, detail_value == True)
         except Exception as e:
-            print(f"运行时出错: {e}")
+            print(f"运行时错误: {e}")
             return redirect('error/?r=1')
 
-        # 重定向到成功页面
         return redirect(f'image/?id={imageid2}')
 
-    return render(request, 'index.html', {'isa': isa, 'isb': isb, 'isc': isc, 'start': start, 'end': end})
+    # 传递四个选中状态到模板（需确保模板包含四个服务器选项）
+    return render(request, 'index.html', {
+        'isa': isa,
+        'isb': isb,
+        'isc': isc,
+        'isd': isd,  # 新增服务器4的选中状态
+        'start': start,
+        'end': end
+    })
 
+# 以下视图函数无需修改，自动支持新服务器逻辑
 def formtest(request):
     return redirect('../image/')
 
@@ -145,7 +155,7 @@ def image(request):
     return render(request, 'image.html', {'imageid': imageid})
 
 def error(request):
-    errorimage = request.GET.get('r')
+    errorimage = request.GET.get('r', '1')
     if errorimage == '1':
         errorimage = 'error'
     elif errorimage == '2':
