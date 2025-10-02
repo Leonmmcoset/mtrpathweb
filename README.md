@@ -17,7 +17,7 @@ git clone https://github.com/leonmmcoset/mtrpathweb.git
 ``` shell
 pip install -r requirements.txt
 ```
-进行下载（Python环境必须为`>=3.6`，`<3.13`）
+进行下载（Python环境必须为`>=3.10`，`<3.13`）
 #### 3. 搭建网站
 ##### Windows
 编辑`start.bat`，将里面的`10.0.0.10:8010`更改为适用于你自己的IP和端口（如`localhost:80`等）
